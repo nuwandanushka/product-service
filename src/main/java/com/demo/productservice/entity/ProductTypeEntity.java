@@ -5,13 +5,17 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.UUID;
 
+/**
+ * Define Product type entity.
+ */
 @Entity
 @Table(name = "product_type")
 @Getter
 @Setter
-public class ProductTypeEntity {
+public class ProductTypeEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

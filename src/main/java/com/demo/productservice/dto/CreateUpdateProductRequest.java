@@ -13,13 +13,9 @@ public class CreateUpdateProductRequest {
 
     @JsonIgnore
     private String productId;
-
     private String productType;
-
     private double price;
-
     private int quantity;
-
     private String description;
 
 }

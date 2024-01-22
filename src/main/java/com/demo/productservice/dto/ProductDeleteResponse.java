@@ -1,4 +1,11 @@
 package com.demo.productservice.dto;
 
-public class ProductDeleteResponse extends BaseEntityResponse {
+import lombok.Data;
+
+@Data
+public class ProductDeleteResponse {
+
+    private String id;
+
+    private boolean deleted;
 }

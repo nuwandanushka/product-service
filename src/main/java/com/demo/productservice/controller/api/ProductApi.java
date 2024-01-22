@@ -115,11 +115,5 @@ public interface ProductApi extends BaseController {
      * @param page the page
      * @return the page
      */
-    @Operation(summary = "find all products", description = "find all products")
-    @ApiResponse(responseCode = Messages.SUCCESS, description = "success",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
-    @GetMapping(value = RequestMapper.ALL, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    public Page<ProductResponse> findAllProducts(Pageable page);
 
 }

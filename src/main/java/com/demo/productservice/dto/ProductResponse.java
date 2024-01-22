@@ -1,12 +1,24 @@
 package com.demo.productservice.dto;
 
-import lombok.Builder;
 import lombok.Data;
 
-@Data
-public class ProductResponse extends BaseEntityResponse {
+import java.io.Serializable;
+import java.util.Date;
 
-    private String productId;
+@Data
+public class ProductResponse implements Serializable {
+
+    private String id;
+
+    private Date createdDate;
+
+    private Date updatedDate;
+
+    private String createdBy;
+
+    private String modifiedBy;
+
+    private boolean deleted;
 
     private String productType;
 
