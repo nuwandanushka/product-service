@@ -1,22 +1,15 @@
 package com.demo.productservice.controller;
 
-import com.demo.productservice.controller.ProductController;
+import com.demo.productservice.BaseProductServiceApplicationTest;
 import com.demo.productservice.dto.CreateUpdateProductRequest;
 import com.demo.productservice.dto.ProductResponse;
-import com.demo.productservice.platform.common.RequestMapper;
 import com.demo.productservice.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -29,10 +22,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
 @AutoConfigureMockMvc
-@ExtendWith(SpringExtension.class)
-public class ProductControllerTest {
+public class ProductControllerTest extends BaseProductServiceApplicationTest {
 
     @Autowired
     private MockMvc mockMvc;
