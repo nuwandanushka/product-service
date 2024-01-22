@@ -14,6 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -57,28 +60,48 @@ public class ProductServiceImpl implements ProductService {
         productEntity.setQuantity(createUpdateProductRequest.getQuantity());
         productEntity.setDescription(createUpdateProductRequest.getDescription());
 
-        ProductEntity productEntityCreated = productRepository.save(productEntity);
-
+        ProductEntity productEntityCreated = saveProductDetails(productEntity);
         logger.info("Successful ProductServiceImpl#createProduct");
 
-        ProductResponse productResponse = new ProductResponse();
-        productResponse.setId(productEntityCreated.getProductId().toString());
-        productResponse.setCreatedDate(productEntityCreated.getCreationDate());
-        productResponse.setCreatedBy(productEntityCreated.getCreatedBy());
+        // create product response
+        ProductResponse productResponse = getProductResponse(productEntityCreated);
 
         return productResponse;
 
     }
 
+    private ProductResponse getProductResponse(ProductEntity productEntityCreated) {
+
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setId(productEntityCreated.getProductId().toString());
+        productResponse.setDescription(productEntityCreated.getDescription());
+        productResponse.setQuantity(productEntityCreated.getQuantity());
+        productResponse.setPrice(productEntityCreated.getPrice());
+        productResponse.setProductType(productEntityCreated.getProductType().getProductType());
+        productResponse.setCreatedDate(productEntityCreated.getCreationDate());
+        productResponse.setCreatedBy(productEntityCreated.getCreatedBy());
+        productResponse.setModifiedBy(productEntityCreated.getLastModifiedBy());
+        productResponse.setUpdatedDate(productEntityCreated.getLastModifiedDate());
+
+        return productResponse;
+    }
+
+    private ProductEntity saveProductDetails(ProductEntity productEntity) {
+        ProductEntity productEntityCreated = productRepository.save(productEntity);
+        return productEntityCreated;
+    }
+
     @Override
     public ProductResponse updateProduct(CreateUpdateProductRequest createUpdateProductRequest) {
+
         logger.info("Starting ProductServiceImpl#updateProduct");
 
         productUpdateValidator.validate(createUpdateProductRequest);
 
+        ProductEntity productEntity = findProductEntityById(createUpdateProductRequest.getProductId());
+
         Optional<ProductTypeEntity> productTypeEntityOptional = productTypeRepository.findByProductType(createUpdateProductRequest.getProductType());
 
-        ProductEntity productEntity = new ProductEntity();
         productEntity.setProductType(productTypeEntityOptional.get());
         productEntity.setPrice(createUpdateProductRequest.getPrice());
         productEntity.setQuantity(createUpdateProductRequest.getQuantity());
@@ -88,14 +111,18 @@ public class ProductServiceImpl implements ProductService {
 
         logger.info("Successful ProductServiceImpl#updateProduct");
 
-        ProductResponse productResponse = new ProductResponse();
-        productResponse.setId(productEntityCreated.getProductId().toString());
-        productResponse.setCreatedDate(productEntityCreated.getCreationDate());
-        productResponse.setCreatedBy(productEntityCreated.getCreatedBy());
-        productResponse.setUpdatedDate(productEntityCreated.getLastModifiedDate());
-        productResponse.setCreatedBy(productEntityCreated.getLastModifiedBy());
+        ProductResponse productResponse = getProductResponse(productEntityCreated);
 
         return productResponse;
+    }
+
+    private ProductEntity findProductEntityById(String productId) {
+        Optional<ProductEntity> productEntityOptional
+                = productRepository.findByProductId(UUID.fromString(productId));
+        if(productEntityOptional.isPresent()) {
+            return productEntityOptional.get();
+        }
+        return null;
     }
 
     @Override
@@ -108,7 +135,7 @@ public class ProductServiceImpl implements ProductService {
         Assert.isTrue(productEntity.isPresent(), String.format(Messages.PRODUCT_IS_NOT_AVAILABLE,
                 id));
 
-        productRepository.delete(productEntity.get());
+        deleteProductEntity(productEntity.get());
 
         logger.info("Successful ProductServiceImpl#DeleteProduct");
 
@@ -118,22 +145,21 @@ public class ProductServiceImpl implements ProductService {
         return productDeleteResponse;
     }
 
+    private void deleteProductEntity(ProductEntity productEntity) {
+        productRepository.delete(productEntity);
+    }
+
     @Override
     public ProductResponse findProductById(String id) {
         logger.info("Starting ProductServiceImpl#findProductById");
 
-        Optional<ProductEntity> productEntity
-                = productRepository.findByProductId(UUID.fromString(id));
+        ProductEntity productEntity = findProductEntityById(id);
 
-        Assert.isTrue(productEntity.isPresent(), String.format(Messages.PRODUCT_IS_NOT_AVAILABLE, id));
+        Assert.isTrue(Optional.ofNullable(productEntity).isPresent(), String.format(Messages.PRODUCT_IS_NOT_AVAILABLE, id));
 
-        ProductResponse productResponse = new ProductResponse();
-        productResponse.setProductId(productEntity.get().getProductId().toString());
-        productResponse.setDescription(productEntity.get().getDescription());
-        productResponse.setQuantity(productEntity.get().getQuantity());
-        productResponse.setPrice(productEntity.get().getPrice());
-        productResponse.setProductType(productEntity.get().getProductType().getProductType());
+        ProductResponse productResponse = getProductResponse(productEntity);
 
         return productResponse;
+
     }
 }

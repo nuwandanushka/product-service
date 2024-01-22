@@ -6,6 +6,8 @@ import com.demo.productservice.entity.ProductTypeEntity;
 import com.demo.productservice.repository.ProductRepository;
 import com.demo.productservice.repository.ProductTypeRepository;
 import com.demo.productservice.validation.message.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -13,8 +15,13 @@ import org.springframework.util.Assert;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Define Product update validator.
+ */
 @Service("productUpdateValidator")
 public class ProductUpdateValidator implements Validator<CreateUpdateProductRequest> {
+
+    private final Logger logger = LoggerFactory.getLogger(ProductCreateValidator.class);
     @Autowired
     private ProductRepository productRepository;
 
@@ -23,6 +30,8 @@ public class ProductUpdateValidator implements Validator<CreateUpdateProductRequ
 
     @Override
     public void validate(CreateUpdateProductRequest createUpdateProductRequest) {
+        logger.info("start validating product update request");
+
         if (Optional.ofNullable(createUpdateProductRequest).isPresent()) {
 
             Optional<ProductTypeEntity> productType
@@ -39,5 +48,7 @@ public class ProductUpdateValidator implements Validator<CreateUpdateProductRequ
         } else {
             Assert.isTrue(false, Messages.REQUEST_IS_EMPTY);
         }
+
+        logger.info("validating product update request end");
     }
 }
