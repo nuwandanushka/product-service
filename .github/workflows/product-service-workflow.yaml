@@ -31,8 +31,8 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Install Maven dependencies
-        run: mvn install
+      - name: Install Maven dependencies and build
+        run: mvn clean install
 
       - name: Run tests
         run: mvn --batch-mode --update-snapshots verify
